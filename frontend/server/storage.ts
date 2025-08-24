@@ -64,26 +64,26 @@ export class MemStorage implements IStorage {
     });
 
     // Create sample conversations
-    const conv1 = await this.createConversation({
-      userId: user.id,
-      title: "Crude apa saja yang diolah pa...",
-      isPinned: false,
-    });
+    // const conv1 = await this.createConversation({
+    //   userId: user.id,
+    //   title: "Crude apa saja yang diolah pa...",
+    //   isPinned: false,
+    // });
 
-    // Add sample messages
-    await this.createMessage({
-      conversationId: conv1.id,
-      content: "Crude apa saja yang diolah pada bulan Mei 2025 ?",
-      role: "user",
-      attachments: null,
-    });
+    // // Add sample messages
+    // await this.createMessage({
+    //   conversationId: conv1.id,
+    //   content: "Crude apa saja yang diolah pada bulan Mei 2025 ?",
+    //   role: "user",
+    //   attachments: null,
+    // });
 
-    await this.createMessage({
-      conversationId: conv1.id,
-      content: "Pada bulan Mei 2025, unit pengolahan di Kilang Cilacap mengolah kombinasi dari beberapa jenis minyak mentah (crude oil) untuk memenuhi spesifikasi produk dan optimasi biaya operasional.\n\nJenis Crude Oil yang Diolah:\n\nMinas Crude: Merupakan crude oil yang diproduksi secara domestik dari sumur minyak di Indonesia. Ini adalah minyak mentah yang stabil dengan kadar sulfur rendah, sering digunakan sebagai base load di kilang kami.\n\nSaudi Light Crude: Diimpor dari Arab Saudi, minyak mentah ini memiliki kandungan sulfur yang moderat dan gravitasi API yang lebih ringan, sangat ideal untuk menghasilkan bensin dan nafta berkualitas tinggi.\n\nWTI (West Texas Intermediate) Crude: Jenis minyak mentah ini berasal dari Amerika Serikat. Digunakan sebagai topping untuk meningkatkan produksi produk-produk distillate ringan seperti avtur dan kerosene.",
-      role: "assistant",
-      attachments: null,
-    });
+    // await this.createMessage({
+    //   conversationId: conv1.id,
+    //   content: "Pada bulan Mei 2025, unit pengolahan di Kilang Cilacap mengolah kombinasi dari beberapa jenis minyak mentah (crude oil) untuk memenuhi spesifikasi produk dan optimasi biaya operasional.\n\nJenis Crude Oil yang Diolah:\n\nMinas Crude: Merupakan crude oil yang diproduksi secara domestik dari sumur minyak di Indonesia. Ini adalah minyak mentah yang stabil dengan kadar sulfur rendah, sering digunakan sebagai base load di kilang kami.\n\nSaudi Light Crude: Diimpor dari Arab Saudi, minyak mentah ini memiliki kandungan sulfur yang moderat dan gravitasi API yang lebih ringan, sangat ideal untuk menghasilkan bensin dan nafta berkualitas tinggi.\n\nWTI (West Texas Intermediate) Crude: Jenis minyak mentah ini berasal dari Amerika Serikat. Digunakan sebagai topping untuk meningkatkan produksi produk-produk distillate ringan seperti avtur dan kerosene.",
+    //   role: "assistant",
+    //   attachments: null,
+    // });
 
     // Add sample token usage
     const today = new Date();
