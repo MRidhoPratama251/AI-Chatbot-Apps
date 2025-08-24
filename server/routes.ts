@@ -113,13 +113,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       const message = await storage.createMessage(data);
       
-      // Simulate AI response for assistant messages
+      // TODO: Replace this template with actual API endpoint from backend
       if (data.role === "user") {
-        // Create a simple AI response
+        // Create template AI response
         setTimeout(async () => {
           await storage.createMessage({
             conversationId,
-            content: "I understand your question. This is a sample AI response. In a real implementation, this would connect to an AI service like OpenAI's GPT.",
+            content: `Hello, this is a simulated message. Are you asking about "${data.content}"?`,
             role: "assistant",
             attachments: null
           });

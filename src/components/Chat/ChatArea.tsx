@@ -3,7 +3,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserBubble } from "./UserBubble";
 import { AIBubble } from "./AIBubble";
 import { EmptyState } from "../Common/EmptyState";
-import type { Message } from "@shared/schema";
+import type { Message } from "../../shared/schema";
 
 interface ChatAreaProps {
   messages: Message[];

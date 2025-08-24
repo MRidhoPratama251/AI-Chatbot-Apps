@@ -70,18 +70,6 @@ export class MemStorage implements IStorage {
       isPinned: false,
     });
 
-    const conv2 = await this.createConversation({
-      userId: user.id,
-      title: "apa produk yang dihasilkan sel...",
-      isPinned: true,
-    });
-
-    const conv3 = await this.createConversation({
-      userId: user.id,
-      title: "Unit proses apa yang sering m...",
-      isPinned: false,
-    });
-
     // Add sample messages
     await this.createMessage({
       conversationId: conv1.id,
@@ -210,7 +198,7 @@ export class MemStorage implements IStorage {
     const message: Message = {
       ...insertMessage,
       id,
-      attachments: insertMessage.attachments || null,
+      attachments: insertMessage.attachments as string[] | null,
       createdAt: new Date(),
     };
     this.messages.set(id, message);

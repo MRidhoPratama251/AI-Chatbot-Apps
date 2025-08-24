@@ -155,6 +155,7 @@ export const Desktop = (): JSX.Element => {
     createMessageMutation.mutate({
       conversationId: activeConversationId,
       content: text,
+      role: "user"
     });
   };
 
