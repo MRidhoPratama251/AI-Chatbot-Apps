@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Copy, Download, RotateCcw, Bot } from "lucide-react";
+import { Copy, Download, RotateCcw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { Message } from "@shared/schema";
 
@@ -43,13 +42,7 @@ export function AIBubble({
   };
 
   return (
-    <div className="flex items-start space-x-3 mb-6">
-      <Avatar className="h-8 w-8 flex-shrink-0">
-        <AvatarFallback className="bg-blue-100 dark:bg-blue-900">
-          <Bot className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        </AvatarFallback>
-      </Avatar>
-
+    <div className="flex items-start mb-6">
       <div className="flex-1 max-w-[80%]">
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-tl-md px-4 py-3 group shadow-sm">
           <div className="text-sm leading-relaxed text-gray-900 dark:text-white whitespace-pre-wrap">

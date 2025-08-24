@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot } from "lucide-react";
 import type { User } from "@shared/schema";
+import nlLogo from "../../assets/nl-logo.png";
 
 interface ChatTopBarProps {
   user: User | null;
@@ -11,9 +11,9 @@ export function ChatTopBar({ user }: ChatTopBarProps) {
   return (
     <header className="h-16 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center justify-between px-6">
       <div className="flex items-center space-x-3">
-        <Bot className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+        <img src={nlLogo} alt="NL Logo" className="h-8 w-8" />
         <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-          AI Chatbot
+          NL
         </h1>
       </div>
       
