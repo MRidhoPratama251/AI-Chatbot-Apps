@@ -20,8 +20,13 @@ export function ChatArea({
     return <EmptyState />;
   }
 
-  // Show empty state if no messages in the conversation
-  if (messages.length === 0) {
+  // Filter out empty or invalid messages
+  const validMessages = messages.filter(message => 
+    message && message.content && message.content.trim().length > 0
+  );
+
+  // Show empty state if no valid messages in the conversation
+  if (validMessages.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
         <div className="text-center text-gray-500 dark:text-gray-400">
@@ -35,7 +40,7 @@ export function ChatArea({
     <ScrollArea className="flex-1 bg-white dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-6 py-6">
         <div className="space-y-6">
-          {messages.map((message) => (
+          {validMessages.map((message) => (
             message.role === "user" ? (
               <UserBubble key={message.id} message={message} />
             ) : (

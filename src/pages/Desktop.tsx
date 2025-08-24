@@ -117,44 +117,23 @@ export const Desktop = (): JSX.Element => {
       });
       return response.json();
     },
-    onMutate: async ({ conversationId, content, role = "user" }) => {
-      // Optimistically update the messages cache
-      await queryClient.cancelQueries({ queryKey: ["/api/conversations", conversationId, "messages"] });
-      
-      const previousMessages = queryClient.getQueryData(["/api/conversations", conversationId, "messages"]);
-      
-      // Add the new message optimistically
-      const optimisticMessage = {
-        id: Date.now(), // temporary ID
-        conversationId,
-        content,
-        role,
-        attachments: null,
-        createdAt: new Date()
-      };
-      
-      queryClient.setQueryData(["/api/conversations", conversationId, "messages"], (old: any) => 
-        old ? [...old, optimisticMessage] : [optimisticMessage]
-      );
-      
-      return { previousMessages };
-    },
-    onError: (err, variables, context) => {
-      // Rollback on error
-      if (context?.previousMessages) {
-        queryClient.setQueryData(["/api/conversations", variables.conversationId, "messages"], context.previousMessages);
-      }
-    },
     onSuccess: (_, variables) => {
-      // Refetch to get the real data including any AI responses
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
+      // Clear input immediately
       setCurrentInput("");
       
-      // Set up a delayed refetch for AI response
+      // Refetch messages to show the new message
+      queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
+      
+      // Refetch after delay to catch AI response
       setTimeout(() => {
         queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
       }, 1500);
+      
+      // Update conversations list
+      queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
+    },
+    onError: () => {
+      toast({ title: "Failed to send message", variant: "destructive" });
     },
   });
 
