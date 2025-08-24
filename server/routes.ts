@@ -113,8 +113,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       const message = await storage.createMessage(data);
       
-      // TODO: Replace this template with actual API endpoint from backend
+      // If this is the first user message, update conversation title
       if (data.role === "user") {
+        const existingMessages = await storage.getMessages(conversationId);
+        const userMessages = existingMessages.filter(msg => msg.role === "user");
+        
+        // If this is the first user message, update the conversation title
+        if (userMessages.length === 1) {
+          const truncatedTitle = data.content.length > 50 
+            ? data.content.substring(0, 50) + "..."
+            : data.content;
+          
+          await storage.updateConversation(conversationId, {
+            title: truncatedTitle
+          });
+        }
+        
         // Create template AI response
         setTimeout(async () => {
           await storage.createMessage({
