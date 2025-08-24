@@ -12,11 +12,8 @@ export function ChatTopBar({ user }: ChatTopBarProps) {
     <header className="h-16 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center justify-between px-6">
       <div className="flex items-center space-x-3">
         <img src={nlLogo} alt="NL Logo" className="h-8 w-8" />
-        <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-          NL
-        </h1>
       </div>
-      
+
       <div className="flex items-center space-x-3">
         <Avatar className="h-8 w-8">
           <AvatarImage src={user?.profilePhoto || undefined} />
