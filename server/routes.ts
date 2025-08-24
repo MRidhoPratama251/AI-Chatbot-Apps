@@ -119,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         setTimeout(async () => {
           await storage.createMessage({
             conversationId,
-            content: `Hello, this is a simulated message. Are you asking about "${data.content}"?`,
+            content: `Hello, this is an AI response simulation. Are you asking about "${data.content}"?`,
             role: "assistant",
             attachments: null
           });

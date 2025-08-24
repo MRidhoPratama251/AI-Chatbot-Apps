@@ -109,18 +109,52 @@ export const Desktop = (): JSX.Element => {
   });
 
   const createMessageMutation = useMutation({
-    mutationFn: async ({ conversationId, content }: { conversationId: number; content: string }) => {
+    mutationFn: async ({ conversationId, content, role = "user" }: { conversationId: number; content: string; role?: string }) => {
       const response = await fetch(`/api/conversations/${conversationId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, role: "user", attachments: null }),
+        body: JSON.stringify({ content, role, attachments: null }),
       });
       return response.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations", activeConversationId, "messages"] });
+    onMutate: async ({ conversationId, content, role = "user" }) => {
+      // Optimistically update the messages cache
+      await queryClient.cancelQueries({ queryKey: ["/api/conversations", conversationId, "messages"] });
+      
+      const previousMessages = queryClient.getQueryData(["/api/conversations", conversationId, "messages"]);
+      
+      // Add the new message optimistically
+      const optimisticMessage = {
+        id: Date.now(), // temporary ID
+        conversationId,
+        content,
+        role,
+        attachments: null,
+        createdAt: new Date()
+      };
+      
+      queryClient.setQueryData(["/api/conversations", conversationId, "messages"], (old: any) => 
+        old ? [...old, optimisticMessage] : [optimisticMessage]
+      );
+      
+      return { previousMessages };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousMessages) {
+        queryClient.setQueryData(["/api/conversations", variables.conversationId, "messages"], context.previousMessages);
+      }
+    },
+    onSuccess: (_, variables) => {
+      // Refetch to get the real data including any AI responses
+      queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
       queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
       setCurrentInput("");
+      
+      // Set up a delayed refetch for AI response
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
+      }, 1500);
     },
   });
 
