@@ -32,7 +32,7 @@ export const Desktop = (): JSX.Element => {
 
   // Fetch messages for active conversation
   const { data: messages = [] } = useQuery<Message[]>({
-    queryKey: ["/api/conversations", activeConversationId, "messages"],
+    queryKey: [`/api/conversations/${activeConversationId}/messages`],
     enabled: !!activeConversationId,
   });
 
@@ -122,11 +122,11 @@ export const Desktop = (): JSX.Element => {
       setCurrentInput("");
       
       // Refetch messages to show the new message
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
+      queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
       
       // Refetch after delay to catch AI response
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["/api/conversations", variables.conversationId, "messages"] });
+        queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
       }, 1500);
       
       // Update conversations list
