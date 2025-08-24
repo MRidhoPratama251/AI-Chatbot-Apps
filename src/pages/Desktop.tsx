@@ -15,6 +15,7 @@ export const Desktop = (): JSX.Element => {
   const [currentInput, setCurrentInput] = useState("");
   const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -66,6 +67,16 @@ export const Desktop = (): JSX.Element => {
       queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
       setActiveConversationId(newConversation.id);
       toast({ title: "New conversation created" });
+      
+      // Send pending message if there is one
+      if (pendingMessage) {
+        createMessageMutation.mutate({
+          conversationId: newConversation.id,
+          content: pendingMessage,
+          role: "user"
+        });
+        setPendingMessage(null);
+      }
     },
   });
 
@@ -150,7 +161,16 @@ export const Desktop = (): JSX.Element => {
   };
 
   const handleSendMessage = (text: string, files?: File[]) => {
-    if (!text.trim() || !activeConversationId) return;
+    if (!text.trim()) return;
+    
+    // If no active conversation, create one first
+    if (!activeConversationId) {
+      setPendingMessage(text);
+      createConversationMutation.mutate({
+        title: text.length > 50 ? text.substring(0, 50) + "..." : text,
+      });
+      return;
+    }
     
     createMessageMutation.mutate({
       conversationId: activeConversationId,

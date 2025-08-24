@@ -20,6 +20,17 @@ export function ChatArea({
     return <EmptyState />;
   }
 
+  // Show empty state if no messages in the conversation
+  if (messages.length === 0) {
+    return (
+      <div className="flex-1 flex items-center justify-center bg-white dark:bg-gray-900">
+        <div className="text-center text-gray-500 dark:text-gray-400">
+          <p>Start a conversation by typing a message below</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <ScrollArea className="flex-1 bg-white dark:bg-gray-900">
       <div className="max-w-4xl mx-auto px-6 py-6">
