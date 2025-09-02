@@ -54,31 +54,36 @@ export const Desktop = (): JSX.Element => {
   }, [conversations, activeConversationId]);
 
   // Mutations
-  const createConversationMutation = useMutation({
-    mutationFn: async (data: { title: string }) => {
-      const response = await fetch("/api/conversations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+  // Mutations
+const createConversationMutation = useMutation({
+  mutationFn: async (data: { title: string }) => {
+    const response = await fetch("/api/conversations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    return response.json();
+  },
+  onSuccess: (newConversation: Conversation) => {
+    // Memperbarui cache untuk daftar percakapan
+    queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
+
+    // SETELAH backend merespons dengan sukses, atur activeConversationId ke ID percakapan baru
+    setActiveConversationId(newConversation.id);
+    
+    toast({ title: "New conversation created" });
+    
+    // Kirim pesan yang tertunda jika ada
+    if (pendingMessage) {
+      createMessageMutation.mutate({
+        conversationId: newConversation.id,
+        content: pendingMessage,
+        role: "user"
       });
-      return response.json();
-    },
-    onSuccess: (newConversation: Conversation) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
-      setActiveConversationId(newConversation.id);
-      toast({ title: "New conversation created" });
-      
-      // Send pending message if there is one
-      if (pendingMessage) {
-        createMessageMutation.mutate({
-          conversationId: newConversation.id,
-          content: pendingMessage,
-          role: "user"
-        });
-        setPendingMessage(null);
-      }
-    },
-  });
+      setPendingMessage(null);
+    }
+  },
+});
 
   const updateConversationMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<Conversation> }) => {
@@ -111,72 +116,72 @@ export const Desktop = (): JSX.Element => {
   // 🔌 API COMMUNICATION: Main mutation for sending messages to backend
   // This sends user messages to /api/conversations/:id/messages endpoint
   // The backend processes the message and generates AI responses using OpenRouter API
-  // const createMessageMutation = useMutation({
-  //   mutationFn: async ({ conversationId, content, role = "user" }: { conversationId: number; content: string; role?: string }) => {
-  //     // 📡 BACKEND API CALL: POST request to create new message
-  //     // Currently uses Node.js/Express backend (server/routes.ts)
-  //     // TODO: Switch to Python FastAPI backend (backend/app/api/routes_chat.py)
-  //     const response = await fetch(`/api/conversations/${conversationId}/messages`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ content, role, attachments: null }),
-  //     });
-  //     return response.json();
-  //   },
-  //   onSuccess: (_, variables) => {
-  //     // Clear input immediately
-  //     setCurrentInput("");
-      
-  //     // Refetch messages to show the new message
-  //     queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
-      
-  //     // Refetch after delay to catch AI response
-  //     setTimeout(() => {
-  //       queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
-  //     }, 1500);
-      
-  //     // Update conversations list
-  //     queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
-  //   },
-  //   onError: () => {
-  //     toast({ title: "Failed to send message", variant: "destructive" });
-  //   },
-  // });
-
   const createMessageMutation = useMutation({
     mutationFn: async ({ conversationId, content, role = "user" }: { conversationId: number; content: string; role?: string }) => {
-      // 📡 BACKEND API CALL: POST request to FastAPI backend
-      const response = await fetch(`/chat/send`, {
+      // 📡 BACKEND API CALL: POST request to create new message
+      // Currently uses Node.js/Express backend (server/routes.ts)
+      // TODO: Switch to Python FastAPI backend (backend/app/api/routes_chat.py)
+      const response = await fetch(`/api/conversations/${conversationId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          conversation_id: conversationId,  // FastAPI expects this in body
-          content,
-          role,
-          attachments: null,
-        }),
+        body: JSON.stringify({ content, role, attachments: null }),
       });
       return response.json();
     },
     onSuccess: (_, variables) => {
       // Clear input immediately
       setCurrentInput("");
-
-      // Refetch messages with FastAPI endpoint
-      queryClient.invalidateQueries({ queryKey: [`/chat/history/${variables.conversationId}`] });
-
+      
+      // Refetch messages to show the new message
+      queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
+      
       // Refetch after delay to catch AI response
       setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: [`/chat/history/${variables.conversationId}`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/conversations/${variables.conversationId}/messages`] });
       }, 1500);
-
-      // Update conversations list (⚠️ kalau FastAPI tidak punya endpoint ini, mungkin perlu diadaptasi)
-      queryClient.invalidateQueries({ queryKey: ["/chat/history"] });
+      
+      // Update conversations list
+      queryClient.invalidateQueries({ queryKey: ["/api/conversations"] });
     },
     onError: () => {
       toast({ title: "Failed to send message", variant: "destructive" });
     },
   });
+
+  // const createMessageMutation = useMutation({
+  //   mutationFn: async ({ conversationId, content, role = "user" }: { conversationId: number; content: string; role?: string }) => {
+  //     // 📡 BACKEND API CALL: POST request to FastAPI backend
+  //     const response = await fetch(`/chat/send`, {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         conversation_id: conversationId,  // FastAPI expects this in body
+  //         content,
+  //         role,
+  //         attachments: null,
+  //       }),
+  //     });
+  //     return response.json();
+  //   },
+  //   onSuccess: (_, variables) => {
+  //     // Clear input immediately
+  //     setCurrentInput("");
+
+  //     // Refetch messages with FastAPI endpoint
+  //     queryClient.invalidateQueries({ queryKey: [`/chat/history/${variables.conversationId}`] });
+
+  //     // Refetch after delay to catch AI response
+  //     setTimeout(() => {
+  //       queryClient.invalidateQueries({ queryKey: [`/chat/history/${variables.conversationId}`] });
+  //     }, 1500);
+
+  //     // Update conversations list (⚠️ kalau FastAPI tidak punya endpoint ini, mungkin perlu diadaptasi)
+  //     queryClient.invalidateQueries({ queryKey: ["/chat/history"] });
+  //   },
+  //   onError: () => {
+  //     toast({ title: "Failed to send message", variant: "destructive" });
+  //   },
+  // });
 
 
   const updateUserMutation = useMutation({

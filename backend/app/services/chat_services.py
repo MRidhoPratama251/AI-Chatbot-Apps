@@ -13,8 +13,8 @@ async def process_user_message(message: MessageCreate) -> ChatResponse:
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
         "Content-Type": "application/json",
-        "HTTP-Referer": "https://replit.com",
-        "X-Title": "AI Chatbot MVP"
+        #"HTTP-Referer": "https://replit.com",
+        #"X-Title": "AI Chatbot MVP"
     }
 
     payload = {
@@ -22,7 +22,7 @@ async def process_user_message(message: MessageCreate) -> ChatResponse:
         "messages": [
             {"role": "user", "content": message.content}
         ],
-        "max_tokens": 4000,
+        "max_tokens": 2000,
         "temperature": 0.7,
         "top_p": 1,
         "frequency_penalty": 0,

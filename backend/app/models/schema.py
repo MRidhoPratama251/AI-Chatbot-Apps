@@ -36,3 +36,27 @@ class ChatResponse(BaseModel):
     conversation_id: int
     user_message: str
     ai_response: str
+
+
+# Tambahkan model ini ke dalam file schema.py Anda
+class ConversationCreate(BaseModel):
+    title: str
+
+class ConversationUpdate(BaseModel):
+    title: Optional[str] = None
+    is_pinned: Optional[bool] = None
+
+class ConversationOut(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    is_pinned: bool
+    created_at: datetime
+    updated_at: datetime
+
+class MessageOut(BaseModel):
+    id: int
+    conversation_id: int
+    role: str
+    content: str
+    created_at: datetime
